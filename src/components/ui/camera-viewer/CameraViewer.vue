@@ -28,29 +28,8 @@ const repository = RepositoryFactory.get(repositorySettings.type)
 
 async function getImages(): Promise<ProjectData> {
   return repository.getImages(imageStore.objectPath).then((data) => {
-    imageStore.rotationImages = data.rotationImages
+    imageStore.spectralImages = data.spectralImages
     imageStore.size = data.size
-    imageStore.anglesMap = new Map(imageStore.rotationImages.map((image, index) => [Math.round(image.angle), index]))
-    /*
-    for(let i = 0; i < 360; i++){
-      let j = i
-      let k = i
-      while(originalRotation[j] == undefined && originalRotation[k] == undefined){
-        j = (360 + j + 1) % 360;
-        k = (360 + k - 1) % 360;
-      }
-      console.log("i : ", i , ";j : ", j, "; k : ", k)
-      if(originalRotation[j] != undefined){
-        imageStore.nearestImage[i] = originalRotation[j]!
-      }
-      else {
-        imageStore.nearestImage[i] = originalRotation[k]!
-      }
-      
-     
-    }
-      */
-
     return data
   })
 }

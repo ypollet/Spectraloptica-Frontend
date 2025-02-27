@@ -62,7 +62,7 @@ function downloadCsv() {
     landmark = landmark as Landmark
     let pose = landmark.pose
     let position = landmark.position
-    let row: Array<string> = [distance.label, landmark.label, landmark.getColorHEX(), pose.marker.x.toString(), pose.marker.y.toString(), imagesStore.rotationImages[pose.image].name, position.x.toString(), position.y.toString()]
+    let row: Array<string> = [distance.label, landmark.label, landmark.getColorHEX(), pose.marker.x.toString(), pose.marker.y.toString(), imagesStore.spectralImages[pose.image].name, position.x.toString(), position.y.toString()]
     rows.push(row)
   })
   })

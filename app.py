@@ -15,7 +15,7 @@ cwd = os.getcwd()
 
 # configuration
 DEBUG = True
-DATA_FOLDER = f"{cwd}/data/A09135"
+DATA_FOLDER = f"{cwd}/data"
 
 # instantiate the app
 app = Flask(__name__, static_folder="dist/static", template_folder="dist", static_url_path="/static")
@@ -25,8 +25,8 @@ app.config.from_object(__name__)
 
 # definitions
 SITE = {
-        'logo': 'Stackoptica',
-        'version': '2.0.0'
+        'logo': 'Sphaeroptica',
+        'version': '1.0.0'
 }
 
 OWNER = {
@@ -55,7 +55,7 @@ def image(id,image_id):
 @app.route('/<id>/<image_id>/thumbnail')
 @cross_origin()
 def thumbnail(id,image_id):
-  return send_from_directory(f"{DATA_FOLDER}/{id}", image_id)
+  return send_from_directory(f"{DATA_FOLDER}/{id}/thumbnails", image_id)
 
 # send StackData
 @app.route('/<id>/images')
@@ -64,25 +64,22 @@ def images(id):
   directory = f"{DATA_FOLDER}/{id}"
   if not os.path.exists(directory):
     abort(404)
-  with open(f"{directory}/rotation.json", "r") as f:
-    rotation_file = json.load(f)
+  with open(f"{directory}/spectral.json", "r") as f:
+    spectral_file = json.load(f)
   to_jsonify = {}
   encoded_images = []
-  for image in rotation_file["rotation"]:
+  for image in spectral_file["spectral"]:
     try:
-      encoded_images.append({ 
-        "name" : image,
-        "angle" : round(rotation_file["rotation"][image]["angle"],2)
-      })
+      encoded_images.append(image)
     except Exception as error:
        print(error)
        continue
-  to_jsonify = { "rotationImages" : encoded_images,
+  to_jsonify = { "spectralImages" : encoded_images,
                   "size" : {
-                    "height" : rotation_file["height"],
-                    "width" : rotation_file["width"]
+                    "height" : spectral_file["height"],
+                    "width" : spectral_file["width"]
                   },
-                  "thumbnails": len(rotation_file["thumbnails"]) != 0
+                  "thumbnails": len(spectral_file["thumbnails"]) != 0
                 }
   return jsonify(to_jsonify)
 
@@ -95,7 +92,7 @@ def compute_landmark(id):
   directory = f"{DATA_FOLDER}/{id}"
   if not os.path.exists(directory):
     abort(404)
-  with open(f"{directory}/rotation.json", "r") as f:
+  with open(f"{directory}/spectral.json", "r") as f:
     stack_file = json.load(f)
     
   

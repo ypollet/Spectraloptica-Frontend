@@ -29,17 +29,23 @@ export const useSettingsStore = defineStore('settings', {
 
 export const useImagesStore = defineStore('images', {
   state: () => ({
-    objectPath: "",
-    image : "stack",
+    objectPath: "isrnbel001_r1_xpl_rotated",
     index : 0,
     spectralImages : new Array<SpectralImage>(),
-    individualImages : new Map<string, SpectralImage>(),
     size : { width : -1, height : -1},
     zoom : -1,
     offset : {x:0, y:0}
   }),
   getters: {
-    selectedImage : (state) => (state.index >= 0 && state.index < state.stackImages.length && state.image == "stack") ?  state.stackImages[state.index] : (!(state.individualImages.has(state.image))) ? {"name":"RBINS Logo","image":"https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg"} : state.individualImages.get(state.image)
+    selectedImage : (state) => (state.index >= 0 && state.index < state.spectralImages.length) ?  
+      state.spectralImages[state.index] : 
+      {
+        "name":"RBINS Logo",
+        "image":"https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg", 
+        "thumbnail":"", 
+        "filter": {type : "", description: ""},
+        "wavelength" : {type: "0", value: 0}
+      },
   },
   actions: {
     setPath(path : string) {
@@ -47,10 +53,11 @@ export const useImagesStore = defineStore('images', {
       this.objectPath = path
     },
     setIndex(index : number){
-      this.index = math.min(math.max(0, index), this.stackImages.length-1)
+      this.index = (this.spectralImages.length + index ) % this.spectralImages.length
+      
     },
     moveIndex(move: number) {
-      this.index = math.min(math.max(0, this.index + move), this.stackImages.length-1)
+      this.index = (this.spectralImages.length + this.index + move ) % this.spectralImages.length
     },
     increment(){
       this.moveIndex(1)
@@ -59,7 +66,7 @@ export const useImagesStore = defineStore('images', {
       this.moveIndex(-1)
     },
     getImageName(index : number){
-      return (index >= 0 && index < this.stackImages.length) ? this.stackImages[index].name : "Image " + index
+      return (index >= 0 && index < this.spectralImages.length) ? this.spectralImages[index].name : "Image " + index
     }
 
   },
@@ -75,7 +82,7 @@ export const useLandmarksStore = defineStore('landmarks', {
     landmarks: Array<Landmark>(),
     distances: Array<Distance>(),
     adjustFactor: 1,
-    scale: "mm",
+    scale: "px",
     tab: "landmarks",
     selectedDistanceIndex: -1
   }),

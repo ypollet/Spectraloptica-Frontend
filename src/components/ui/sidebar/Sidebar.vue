@@ -14,9 +14,26 @@ const landmarksStore = useLandmarksStore()
 <template>
   <div class="flex flex-col pb-[12px] w-auto h-full">
     <div class="flex-none space-y-4 py-4">
-      <div class="px-3 py-2">
-        <Slider :model-value="[imageStore.index]" :max="imageStore.stackImages.length - 1" :step="1"
+      <div class="px-3 py-2 bg-linear-to-bl from-violet-500 to-fuchsia-500">
+        <Slider :model-value="[imageStore.index]" :max="imageStore.spectralImages.length - 1" :step="1"
           @update:modelValue="$event => imageStore.setIndex($event![0])" />
+        <div className='mt-1.5 flex flex-row justify-between'>
+          <span class="w-5 text-center" v-for="i in new Array(imageStore.spectralImages.length)">
+            |
+          </span>
+        </div>
+      </div>
+      <div class="flex flex-row px-3 py-2 justify-around text-center">
+        <div class="flex flex-col">
+          <h3 class="font-bold">Wavelength</h3>
+          <span>{{ imageStore.selectedImage.wavelength.type }}</span>
+          <span>{{ imageStore.selectedImage.wavelength.value }}</span>
+        </div>
+        <div class="flex flex-col">
+          <h3 class="font-bold">Filter</h3>
+          <span>{{ imageStore.selectedImage.filter.type }}</span>
+          <span>{{ imageStore.selectedImage.filter.description }}</span>
+        </div>
       </div>
       <Tabs :model-value="landmarksStore.tab" @update:modelValue="$event => landmarksStore.tab = $event.toString()"
         default-value="landmarks" class="w-full my-4">
