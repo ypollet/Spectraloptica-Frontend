@@ -5,20 +5,34 @@ import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useImagesStore, useLandmarksStore } from "@/lib/stores";
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { storeToRefs } from "pinia";
 
 const imageStore = useImagesStore()
 const landmarksStore = useLandmarksStore()
 
+const { listGradients } = storeToRefs(imageStore)
 </script>
 
 <template>
   <div class="flex flex-col pb-[12px] w-auto h-full">
     <div class="flex-none space-y-4 py-4">
-      <div class="px-3 py-2 bg-linear-to-bl from-violet-500 to-fuchsia-500">
+      <ToggleGroup type="single" :model-value="imageStore.image"
+      @update:modelValue="$event => imageStore.image = $event.toString()">
+        <ToggleGroupItem value="wavelength">
+          Wavelength
+        </ToggleGroupItem>
+        <ToggleGroupItem v-for="spectral in imageStore.individualImages.keys()" :value="spectral">
+          {{ spectral }}
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </div>
+    <div class="flex-none space-y-4 py-4">
+      <div class="px-3 py-2 fibggor">
+        <!-- bg-linear-to-r/decreasing from-purple-600 to-red-600 -->
         <Slider :model-value="[imageStore.index]" :max="imageStore.spectralImages.length - 1" :step="1"
           @update:modelValue="$event => imageStore.setIndex($event![0])" />
         <div className='mt-1.5 flex flex-row justify-between'>
-          <span class="w-5 text-center" v-for="i in new Array(imageStore.spectralImages.length)">
+          <span class="w-5 text-center text-white" v-for="i in new Array(imageStore.spectralImages.length)">
             |
           </span>
         </div>
@@ -67,5 +81,9 @@ const landmarksStore = useLandmarksStore()
 
 .scroll-snap-type {
   scroll-snap-type: y mandatory;
+}
+
+.fibggor {
+  background-image: linear-gradient(v-bind(listGradients));
 }
 </style>

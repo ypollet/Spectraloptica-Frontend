@@ -30,6 +30,9 @@ async function getImages(): Promise<ProjectData> {
   return repository.getImages(imageStore.objectPath).then((data) => {
     imageStore.spectralImages = data.spectralImages
     imageStore.size = data.size
+    imageStore.individualImages = data.individualImages
+    console.log("image store updated")
+    console.log(imageStore.individualImages)
     return data
   })
 }
