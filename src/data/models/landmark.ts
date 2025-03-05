@@ -1,12 +1,11 @@
 import Color from "color"
 import type { Coordinates, Position } from "@/data/models/coordinates"
+import type { SpectralImage } from "./spectral_image"
 
 export type Pose = {
     marker: Coordinates
-    image: number
+    image: SpectralImage
 }
-
-
 
 export class Landmark {
     id: string
@@ -64,7 +63,7 @@ export class Landmark {
         this.color = Color.rgb(color[0], color[1], color[2])
     }
 
-    setPose(image : number, pose: Coordinates) {
+    setPose(image : SpectralImage, pose: Coordinates) {
         this.pose = {
             marker : pose,
             image : image

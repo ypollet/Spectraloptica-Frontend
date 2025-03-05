@@ -44,6 +44,7 @@ export const useImagesStore = defineStore('images', {
       state.spectralImages[state.index] : (state.individualImages.has(state.image)) ? state.individualImages.get(state.image)! :
       {
         "name":"RBINS Logo",
+        "label":"RBINS Logo",
         "image":"https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg", 
         "thumbnail":"", 
         "filter": {type : "", description: ""},

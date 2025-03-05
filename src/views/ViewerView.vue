@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {useRoute} from 'vue-router'
-
 import { ref } from "vue";
 import Menu from "@/components/Menu.vue";
 import { Separator } from "@/components/ui/separator";
@@ -9,10 +7,12 @@ import { useSettingsStore, useImagesStore } from "@/lib/stores";
 import { CameraViewer } from "@/components/ui/camera-viewer"
 
 const settingsStore = useSettingsStore()
-const route=useRoute();
 const imageStore = useImagesStore()
 
-imageStore.setPath(route.params.id as string)
+
+let urlParams = new URLSearchParams(window.location.search);
+
+imageStore.setPath(urlParams.get('series') as string)
 
 </script>
 

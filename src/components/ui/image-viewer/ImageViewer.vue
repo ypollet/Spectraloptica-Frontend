@@ -60,13 +60,13 @@ function loaded() {
       screenFit()
     }
     if (base_image.value!.alt.startsWith("Thumbnail")) {
-      let image_name = imagesStore.selectedImage!.name
+      let image_name = imagesStore.selectedImage.name
       setTimeout(() => {
-        if (image_name == imagesStore.selectedImage!.name) {
+        if (image_name == imagesStore.selectedImage.name) {
           nextTick(() => {
             // Just verifies we draw the right image
             if (base_image.value!.alt.endsWith(image_name)) {
-              base_image.value!.src = imagesStore.selectedImage!.image
+              base_image.value!.src = imagesStore.selectedImage.image
               base_image.value!.alt = image_name
               update()
             }
@@ -86,14 +86,14 @@ function drawImage() {
 
     let ctx = canvas.value.getContext("2d")!
 
-    let zoomX = imagesStore.zoom / ratio.ratioW
-    let zoomY = imagesStore.zoom / ratio.ratioH
+    let zoomX = imagesStore.zoom / ratio.width
+    let zoomY = imagesStore.zoom / ratio.height
 
     let radius = DOT_RADIUS / zoomX
 
     ctx.scale(zoomX, zoomY)
 
-    ctx.translate(imagesStore.offset.x * ratio.ratioW, imagesStore.offset.y * ratio.ratioH)
+    ctx.translate(imagesStore.offset.x * ratio.width, imagesStore.offset.y * ratio.height)
 
     shiftCanvas.value = {
       x: Math.max(0, (canvas.value.width - base_image.value.naturalWidth * zoomX) / 2) / zoomX,
@@ -111,16 +111,16 @@ function drawImage() {
       let landmark = distance.landmarks[0]
       let marker = (landmark.equals(landmarkDragged.value)) ? draggedPos.value : landmark.pose.marker
       let shiftedMarker = {
-        x: marker.x * ratio.ratioW + shiftCanvas.value.x,
-        y: marker.y * ratio.ratioH + shiftCanvas.value.y
+        x: marker.x * ratio.width + shiftCanvas.value.x,
+        y: marker.y * ratio.height + shiftCanvas.value.y
       }
       ctx.moveTo(shiftedMarker.x, shiftedMarker.y)
       for (let i = 1; i < distance.landmarks.length; i++) {
         landmark = distance.landmarks[i]
         marker = (landmark.equals(landmarkDragged.value)) ? draggedPos.value : landmark.pose.marker
         shiftedMarker = {
-          x: marker.x * ratio.ratioW + shiftCanvas.value.x,
-          y: marker.y * ratio.ratioH + shiftCanvas.value.y
+          x: marker.x * ratio.width + shiftCanvas.value.x,
+          y: marker.y * ratio.height + shiftCanvas.value.y
         }
         ctx.lineTo(shiftedMarker.x, shiftedMarker.y)
       }
@@ -138,8 +138,8 @@ function drawImage() {
         let marker = draggedPos.value
         // update pos marker depending on image
         marker = {
-          x: marker.x * ratio.ratioW,
-          y: marker.y * ratio.ratioH
+          x: marker.x * ratio.width,
+          y: marker.y * ratio.height
         }
 
         drawTarget(ctx, marker, radius)
@@ -164,8 +164,8 @@ function drawImage() {
           let marker = draggedPos.value
           // update pos marker depending on image
           marker = {
-            x: marker.x * ratio.ratioW,
-            y: marker.y * ratio.ratioH
+            x: marker.x * ratio.width,
+            y: marker.y * ratio.height
           }
 
           drawTarget(ctx, marker, radius)
@@ -243,15 +243,15 @@ function drawTarget(ctx: CanvasRenderingContext2D, marker: Coordinates, radius: 
 function drawMarker(ctx: CanvasRenderingContext2D, landmark: Landmark, radius: number) {
   let ratio = getRatio()
   let marker = {
-    x: landmark.getPose().marker.x * ratio.ratioW,
-    y: landmark.getPose().marker.y * ratio.ratioH
+    x: landmark.getPose().marker.x * ratio.width,
+    y: landmark.getPose().marker.y * ratio.height
   }
   ctx.beginPath()
   ctx.arc((marker.x + shiftCanvas.value.x), (marker.y + shiftCanvas.value.y), radius, 0, 2 * Math.PI);
   ctx.fillStyle = landmark.getColorHEX()
   ctx.fill();
   ctx.lineWidth = radius / 2;
-  ctx.strokeStyle = (landmark.getPose().image == imagesStore.index) ? "black" : "white";
+  ctx.strokeStyle = (landmark.getPose().image.name == imagesStore.selectedImage.name) ? "black" : "white";
   ctx.stroke();
   ctx.closePath()
 }
@@ -285,20 +285,21 @@ function screenFit() {
 function getRatio(): Ratio {
   if (base_image.value && base_image.value.complete) {
     return {
-      ratioW: base_image.value.naturalWidth / imagesStore.size.width,
-      ratioH: base_image.value.naturalHeight / imagesStore.size.height
+      width: base_image.value.naturalWidth / imagesStore.size.width,
+      height: base_image.value.naturalHeight / imagesStore.size.height
     }
   }
   return {
-    ratioW: 0,
-    ratioH: 0
+    width: 0,
+    height: 0
   }
 }
 
 function getPos(event: MouseEvent): Coordinates {
+  let ratio = getRatio()
   const svgRect = canvas.value!.getBoundingClientRect();
-  let x = ((event.pageX - svgRect.left) / imagesStore.zoom) - imagesStore.offset.x - shiftCanvas.value.x
-  let y = ((event.pageY - svgRect.top) / imagesStore.zoom) - imagesStore.offset.y - shiftCanvas.value.y
+  let x = ((event.pageX - svgRect.left) / imagesStore.zoom) - imagesStore.offset.x - (shiftCanvas.value.x / ratio.width)
+  let y = ((event.pageY - svgRect.top) / imagesStore.zoom) - imagesStore.offset.y - (shiftCanvas.value.y / ratio.height)
   return { x: x, y: y }
 }
 
@@ -352,7 +353,7 @@ function startDrag(event: MouseEvent) {
   else if (event.button == 2) {
     let pose = {
       marker : pos,
-      image : imagesStore.index
+      image : imagesStore.selectedImage
     } as Pose
     if (!onImage(pos)) {
       // Image not clicked
@@ -404,7 +405,7 @@ function stopDrag(event: MouseEvent) {
     if (landmarkDragged.value != null) {
       //update pos of landmark
       let landmark = landmarkDragged.value
-      landmark.setPose(imagesStore.index, getPos(event))
+      landmark.setPose(imagesStore.selectedImage, getPos(event))
       repository.computeLandmarkPosition(imagesStore.objectPath, landmark.pose).then((position) => {
         landmark.setPosition(position)
       })
@@ -465,7 +466,7 @@ function pointInsideCircle(pointCoord: Coordinates, circleCoord: Coordinates, ra
 function onImage(pos: Coordinates): boolean {
   let ratio = getRatio()
   if (base_image.value) {
-    return pos.x >= 0 && pos.y >= 0 && pos.x <= base_image.value.naturalWidth / ratio.ratioW && pos.y <= base_image.value.naturalHeight / ratio.ratioH
+    return pos.x >= 0 && pos.y >= 0 && pos.x <= base_image.value.naturalWidth / ratio.width && pos.y <= base_image.value.naturalHeight / ratio.height
   }
   return false
 }
@@ -473,8 +474,9 @@ function onImage(pos: Coordinates): boolean {
 
 async function addDistance(pose : Pose) {
   let distance = new Distance("Distance " + (landmarksStore.distances.length + 1))
-  landmarksStore.distances.push(distance)
-  distance.landmarks.push(await createLandmark(pose, distance.color));
+  let index = landmarksStore.distances.push(distance) -1
+  let landmark = await createLandmark(pose, distance.color)
+  landmarksStore.distances[index].landmarks.push(landmark);
 }
 
 async function createLandmark(pose: Pose, color: Color | undefined = undefined) : Promise<Landmark> {
@@ -512,8 +514,8 @@ function deleteLandmark(landmark: Landmark) {
       @mousedown="startDrag" @mouseup="stopDrag" @mousemove="mousemove" @mouseout="stopDrag" @wheel="zoomWithWheel"
       @contextmenu.prevent>
     </canvas>
-    <img ref="base_image" class="hidden" :src="imagesStore.selectedImage!.thumbnail || imagesStore.selectedImage!.image"
-      :alt="(imagesStore.selectedImage!.thumbnail) ? 'Thumbnail of ' + imagesStore.selectedImage!.name : imagesStore.selectedImage!.name" aspect-ratio="auto" @load="loaded">
+    <img ref="base_image" class="hidden" :src="imagesStore.selectedImage.thumbnail || imagesStore.selectedImage.image"
+      :alt="(imagesStore.selectedImage.thumbnail) ? 'Thumbnail of ' + imagesStore.selectedImage.name : imagesStore.selectedImage.name" aspect-ratio="auto" @load="loaded">
   </div>
 
 </template>

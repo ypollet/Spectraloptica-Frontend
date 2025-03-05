@@ -31,8 +31,6 @@ async function getImages(): Promise<ProjectData> {
     imageStore.spectralImages = data.spectralImages
     imageStore.size = data.size
     imageStore.individualImages = data.individualImages
-    console.log("image store updated")
-    console.log(data)
     return data
   })
 }
@@ -47,7 +45,7 @@ async function getImages(): Promise<ProjectData> {
     </div>
     <div v-if="data" class="w-full h-full flex flex-col items-center">
       <div class="flex grow flex-row w-full justify-start">
-        <Label class="border p-2">{{ imageStore.selectedImage!.name }}</Label>
+        <Label class="border p-2">{{ imageStore.selectedImage.label }}</Label>
       </div>
       <ImageViewer class="object-fit" aspect-ratio="auto" draggable="false" />
     </div>

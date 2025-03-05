@@ -1,6 +1,7 @@
 export type SpectralImage = {
     name: string,
     image: string,
+    label: string,
     thumbnail: string,
     wavelength: Wavelength,
     filter : Filter
@@ -29,6 +30,6 @@ export type ProjectData = {
 }
 
 export type Ratio = {
-    ratioH: number,
-    ratioW: number
+    height: number,
+    width: number
 }

@@ -30,7 +30,6 @@ const props = defineProps({
 })
 
 const landmarksStore = useLandmarksStore()
-const imagesStore = useImagesStore()
 
 const scrollSnapType = ref<boolean>(true)
 const landmarksElements = ref<InstanceType<typeof draggable> | null>(null)
@@ -133,7 +132,7 @@ function deleteDistance() {
                             </div>
                             <div class="flex items-center h-full w-auto justify-end space-x-3 pr-3">
                                 <Separator orientation="vertical" class="h-full w-0.5" />
-                                <Label class="whitespace-nowrap">{{ imagesStore.getImageName(landmark.pose.image)
+                                <Label class="whitespace-nowrap">{{ landmark.pose.image.label
                                     }}</Label>
                             </div>
                             <div class="flex items-center justify-end space-x-3">

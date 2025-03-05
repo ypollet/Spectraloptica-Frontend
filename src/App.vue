@@ -16,6 +16,6 @@ function changePicture(event: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="overflow-hidden"> <RouterView @keydown="changePicture"/></div>
+  <div class="overflow-hidden"> <ViewerView @keydown="changePicture"/></div>
 </template>
 

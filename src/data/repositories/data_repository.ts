@@ -26,7 +26,6 @@ export class DataRepository implements Repository {
                     spectralImage.thumbnail = this.getThumbnail(objectPath, spectralImage.name)
                 }
             })
-            console.log(data.individualImages)
             data.individualImages = new Map(Object.entries(data.individualImages))
             data.individualImages.forEach((spectralImage, label) => {
                 spectralImage.image = this.getFullImage(objectPath, spectralImage.name)

@@ -1,6 +1,6 @@
 {
-  "name": "plugin-stackoptica",
-  "version": "2.0.0",
+  "name": "spectraloptica",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -34,7 +34,6 @@
     "tsc": "^2.0.4",
     "vue": "^3.4.15",
     "vue-draggable": "^2.0.6",
-    "vue-router": "^4.2.5",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
