@@ -32,7 +32,7 @@ async function getImages(): Promise<ProjectData> {
     imageStore.size = data.size
     imageStore.individualImages = data.individualImages
     console.log("image store updated")
-    console.log(imageStore.individualImages)
+    console.log(data)
     return data
   })
 }
