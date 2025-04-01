@@ -80,16 +80,19 @@ def images(id):
     to_jsonify = {}
     encoded_images = []
     individual_images = dict()
-    for image in spectral_file["spectral"]:
+    for image_data in spectral_file["spectral"]:
         try:
-            encoded_images.append(image)
+            image_data["label"] = image_data["name"]
+            encoded_images.append(image_data)
         except Exception as error:
             print(error)
             continue
     for image in spectral_file["individualImages"]:
         try:
             # file name of stacked image
-            individual_images[image] = spectral_file["individualImages"][image]
+            image_data = spectral_file["individualImages"][image]
+            image_data["label"] = image
+            individual_images[image] = image_data
         except Exception as error:
             print(error)
             continue

@@ -37,18 +37,24 @@ export const useImagesStore = defineStore('images', {
     image : DEFAULT_TAB,
     size : { width : -1, height : -1},
     zoom : -1,
-    offset : {x:0, y:0}
+    offset : {x:0, y:0},
+    zoomRect: {
+      top: 0,
+      left: 0,
+      width: 0,
+      height:0 
+    },
   }),
   getters: {
     selectedImage : (state) => (state.index >= 0 && state.index < state.spectralImages.length && state.image == DEFAULT_TAB) ?  
       state.spectralImages[state.index] : (state.individualImages.has(state.image)) ? state.individualImages.get(state.image)! :
       {
-        "name":"RBINS Logo",
-        "label":"RBINS Logo",
-        "image":"https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg", 
-        "thumbnail":"", 
-        "filter": {type : "", description: ""},
-        "wavelength" : {type: "0", value: 0}
+        name:"RBINS Logo",
+        label:"RBINS Logo",
+        image:"https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg", 
+        thumbnail:"", 
+        filter: {type : "", description: ""},
+        wavelength : {type: "0", value: 0}
       },
       minWavelength : (state) => Math.min.apply(null, state.spectralImages.map((image) => image.wavelength.value || Infinity)),
       maxWavelength : (state) => Math.max.apply(null, state.spectralImages.map((image) => image.wavelength.value || -Infinity)),
@@ -73,12 +79,12 @@ export const useImagesStore = defineStore('images', {
     },
     setIndex(index : number){
       this.image = DEFAULT_TAB
-      this.index = (this.spectralImages.length + index ) % this.spectralImages.length
+      this.index = math.min(math.max(0, index), this.spectralImages.length-1)
       
     },
     moveIndex(move: number) {
       this.image = DEFAULT_TAB
-      this.index = (this.spectralImages.length + this.index + move ) % this.spectralImages.length
+      this.index = math.min(math.max(0, this.index + move), this.spectralImages.length-1)
     },
     increment(){
       if(this.image == DEFAULT_TAB){

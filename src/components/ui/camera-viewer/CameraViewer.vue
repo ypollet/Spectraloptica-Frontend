@@ -17,7 +17,7 @@ import { repositorySettings } from "@/config/appSettings"
 import Label from '../label/Label.vue';
 
 
-const imageStore = useImagesStore()
+const imagesStore = useImagesStore()
 
 const { isPending, isError, data, error } = useQuery({
   queryKey: ['all_images'],
@@ -27,10 +27,11 @@ const { isPending, isError, data, error } = useQuery({
 const repository = RepositoryFactory.get(repositorySettings.type)
 
 async function getImages(): Promise<ProjectData> {
-  return repository.getImages(imageStore.objectPath).then((data) => {
-    imageStore.spectralImages = data.spectralImages
-    imageStore.size = data.size
-    imageStore.individualImages = data.individualImages
+  return repository.getImages(imagesStore.objectPath).then((data) => {
+    imagesStore.spectralImages = data.spectralImages
+    imagesStore.size = data.size
+    imagesStore.individualImages = data.individualImages
+    
     return data
   })
 }
@@ -45,7 +46,7 @@ async function getImages(): Promise<ProjectData> {
     </div>
     <div v-if="data" class="w-full h-full flex flex-col items-center">
       <div class="flex grow flex-row w-full justify-start">
-        <Label class="border p-2">{{ imageStore.selectedImage.label }}</Label>
+        <Label class="border p-2">{{ imagesStore.selectedImage.label }}</Label>
       </div>
       <ImageViewer class="object-fit" aspect-ratio="auto" draggable="false" />
     </div>
