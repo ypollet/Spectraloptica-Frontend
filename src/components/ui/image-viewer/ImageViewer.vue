@@ -17,6 +17,7 @@ const repository = RepositoryFactory.get(repositorySettings.type)
 const landmarksStore = useLandmarksStore()
 const imagesStore = useImagesStore()
 
+
 landmarksStore.$subscribe((mutation, state) => {
   update()
 })
@@ -26,6 +27,7 @@ const props = defineProps<{
 }>()
 
 const { selectedImage } = storeToRefs(imagesStore)
+const screenZoom = ref<number>(1)
 
 watch(
   selectedImage,
@@ -299,7 +301,6 @@ function posCircle(center: Coordinates, angle: number, radius: number, translate
 
 function update() {
   if (canvas.value && base_image.value && base_image.value.complete) {
-    console.log("update : ", landmarksStore.landmarks.length)
     // Clear canvas
     canvas.value.width = canvas.value.width
 
@@ -335,7 +336,9 @@ function screenFit() {
     canvas.value.width = Math.floor(imageContainer.value.clientWidth)
     canvas.value.height = Math.floor(imageContainer.value.clientHeight)
 
-    imagesStore.zoom = Math.min(imageContainer.value.clientWidth / imagesStore.size.width, imageContainer.value.clientHeight / imagesStore.size.height)
+    screenZoom.value = Math.min(imageContainer.value.clientWidth / imagesStore.size.width, imageContainer.value.clientHeight / imagesStore.size.height)
+    console.log("Screen Fit : ", screenZoom.value)
+    imagesStore.zoom = screenZoom.value
   }
 }
 
@@ -372,15 +375,18 @@ function updateOffset(movementX: number, movementY: number) {
 }
 
 function updateZoom(zoomDelta: number) {
-
-  imagesStore.zoom = +(imagesStore.zoom * (1 + zoomDelta / 20)).toFixed(2)
+  console.log("-------------------")
+  console.log(ZOOM_MIN*screenZoom.value, imagesStore.zoom, ZOOM_MAX)
+  imagesStore.zoom = +(imagesStore.zoom * (1 + zoomDelta / 20)).toFixed(5)
 
   //check value
-  imagesStore.zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, imagesStore.zoom))
+  console.log(Math.max(ZOOM_MIN*screenZoom.value, Math.min(ZOOM_MAX, imagesStore.zoom)))
+  imagesStore.zoom = Math.max(ZOOM_MIN*screenZoom.value, Math.min(ZOOM_MAX, imagesStore.zoom))
 }
 
 
 function zoomWithWheel(event: WheelEvent) {
+  
   let oldZoom = imagesStore.zoom
   updateZoom(Math.sign(-event.deltaY))
   let deltaZoom = imagesStore.zoom / oldZoom
@@ -399,7 +405,6 @@ function zoomWithWheel(event: WheelEvent) {
 }
 
 function startDrag(event: MouseEvent) {
-  console.log("Clicked")
   let pos = getPos({x: event.pageX, y:event.pageY})
   if (event.button == 0) {
     dragging.value = true
@@ -548,9 +553,7 @@ async function addLandmark(pose: Pose, distance: Distance) {
 }
 
 async function generateLandmark(pose: Pose) {
-  console.log("generate landmark")
   landmarksStore.landmarks.push(await createLandmark(pose))
-  console.log("finish generate landmark")
 }
 
 function deleteLandmark(landmark: Landmark) {
