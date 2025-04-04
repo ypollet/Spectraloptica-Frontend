@@ -337,7 +337,6 @@ function screenFit() {
     canvas.value.height = Math.floor(imageContainer.value.clientHeight)
 
     screenZoom.value = Math.min(imageContainer.value.clientWidth / imagesStore.size.width, imageContainer.value.clientHeight / imagesStore.size.height)
-    console.log("Screen Fit : ", screenZoom.value)
     imagesStore.zoom = screenZoom.value
   }
 }
@@ -375,12 +374,7 @@ function updateOffset(movementX: number, movementY: number) {
 }
 
 function updateZoom(zoomDelta: number) {
-  console.log("-------------------")
-  console.log(ZOOM_MIN*screenZoom.value, imagesStore.zoom, ZOOM_MAX)
   imagesStore.zoom = +(imagesStore.zoom * (1 + zoomDelta / 20)).toFixed(5)
-
-  //check value
-  console.log(Math.max(ZOOM_MIN*screenZoom.value, Math.min(ZOOM_MAX, imagesStore.zoom)))
   imagesStore.zoom = Math.max(ZOOM_MIN*screenZoom.value, Math.min(ZOOM_MAX, imagesStore.zoom))
 }
 
