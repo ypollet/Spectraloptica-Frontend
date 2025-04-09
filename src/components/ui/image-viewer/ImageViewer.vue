@@ -564,7 +564,7 @@ function deleteLandmark(landmark: Landmark) {
 
 <template>
   <div ref="imageContainer"
-    :class="cn('relative border w-full h-full flex justify-center items-center overflow-auto', props.class)"
+    :class="cn('relative border w-full h-full flex justify-center items-center overflow-visible', props.class)"
     @wheel.prevent>
 
     <canvas ref="canvas" tabindex='1' :class="{ 'cursor-none': landmarkDragged, 'cursor-pointer': !landmarkDragged }"
