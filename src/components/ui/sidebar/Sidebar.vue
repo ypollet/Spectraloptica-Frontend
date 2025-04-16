@@ -21,10 +21,10 @@ const { listGradients } = storeToRefs(imageStore)
         <ThumbnailViewer/>
       </div>
     </div>
-    <div class="flex-none space-y-4 py-4">
-      <ToggleGroup type="single" :model-value="imageStore.image"
-        @update:modelValue="$event => { if ($event) { imageStore.image = $event.toString() } }">
-        <ToggleGroupItem value="wavelength">
+    <div class="flex space-y-4 py-4">
+      <ToggleGroup class="flex max-w-full block justify-center items-center space-x-4 space-y-2" type="single" :model-value="imageStore.image"
+      @update:modelValue="$event => imageStore.image = $event.toString()">
+        <ToggleGroupItem value="wavelength" v-if="imageStore.spectralImages.length > 0">
           Wavelength
         </ToggleGroupItem>
         <ToggleGroupItem v-for="spectral in imageStore.individualImages.keys()" :value="spectral">
@@ -33,7 +33,7 @@ const { listGradients } = storeToRefs(imageStore)
       </ToggleGroup>
     </div>
     <div class="flex-none space-y-4 py-4">
-      <div class="px-3 py-2 fibggor">
+      <div class="px-3 py-2 fibggor" v-if="imageStore.spectralImages.length > 0">
         <!-- bg-linear-to-r/decreasing from-purple-600 to-red-600 -->
         <Slider :model-value="[imageStore.index]" :max="imageStore.spectralImages.length - 1" :step="1"
           @update:modelValue="$event => imageStore.setIndex($event![0])" />
@@ -43,7 +43,7 @@ const { listGradients } = storeToRefs(imageStore)
           </span>
         </div>
       </div>
-      <div class="flex flex-row px-3 py-2 justify-around text-center">
+      <div class="flex flex-row px-3 py-2 justify-around text-center" v-if="imageStore.spectralImages.length > 0">
         <div class="flex flex-col">
           <h3 class="font-bold">Wavelength</h3>
           <span>{{ imageStore.selectedImage.wavelength.type }}</span>

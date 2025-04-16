@@ -32,6 +32,11 @@ async function getImages(): Promise<ProjectData> {
     imagesStore.size = data.size
     imagesStore.individualImages = data.individualImages
     
+    if(imagesStore.spectralImages.length == 0){
+      let imageRand = data.individualImages.keys().next().value!
+      console.log("ImageRand : " + imageRand)
+      imagesStore.image = imageRand
+    }
     return data
   })
 }
