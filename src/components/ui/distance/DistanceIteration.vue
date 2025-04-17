@@ -71,7 +71,7 @@ function deleteDistance() {
 
 <template>
     <div>
-        <div class="flex pr-2 py-2 border-transparent border-2">
+        <div class="flex pr-2 border-transparent border-2">
             <div class="flex grow row justify-between items-center pr-3 py-2">
                 <div class="flex grow row w-full justify-start items-center space-x-3 mr-3">
                     <input type="color"

@@ -10,14 +10,15 @@ const landmarksStore = useLandmarksStore()
 
 const { selectedDistanceIndex } = storeToRefs(landmarksStore)
 
-function updateSelectedDist(payload : string){
+function updateSelectedDist(payload: string) {
     landmarksStore.selectedDistanceIndex = Number(payload)
 }
 </script>
 
 <template>
     <div class="flex grow w-full flex-col space-y-5">
-        <Select class="flex grow w-full" :model-value="selectedDistanceIndex.toString()" @update:model-value="updateSelectedDist">
+        <Select class="flex grow w-full" :model-value="selectedDistanceIndex.toString()"
+            @update:model-value="updateSelectedDist">
             <SelectTrigger class="w-full">
                 <SelectValue placeholder="Pick a distance" />
             </SelectTrigger>
@@ -25,15 +26,20 @@ function updateSelectedDist(payload : string){
                 <SelectGroup>
                     <SelectItem class="h-8" value="-1">
                     </SelectItem>
-                    <SelectItem class="h-8" v-for="(distance, index) in landmarksStore.distances" :value="index.toString()">
+                    <SelectItem class="h-8" v-for="(distance, index) in landmarksStore.distances"
+                        :value="index.toString()">
                         {{ distance.label }}
                     </SelectItem>
                 </SelectGroup>
             </SelectContent>
         </Select>
-        <DistanceIteration v-if="landmarksStore.selectedDistance != null" :distance="landmarksStore.selectedDistance" :index="landmarksStore.selectedDistanceIndex" :showLandmarks="true" />
-        <div v-for="(map) in landmarksStore.distances.map((distanceMap, indexMap) => [distanceMap, indexMap] as [Distance, number]).filter((map) => map[1] != landmarksStore.selectedDistanceIndex)">
-            <DistanceIteration v-if="map[1] != landmarksStore.selectedDistanceIndex"  :distance="map[0]" :index="map[1]" :showLandmarks="false" @dblclick="landmarksStore.selectedDistanceIndex = map[1]" />
+        <DistanceIteration v-if="landmarksStore.selectedDistance != null" :distance="landmarksStore.selectedDistance"
+            :index="landmarksStore.selectedDistanceIndex" :showLandmarks="true" />
+        <div class="flex grow flex-col space-y-2">
+            <div v-for="(map) in landmarksStore.distances.map((distanceMap, indexMap) => [distanceMap, indexMap] as [Distance, number]).filter((map) => map[1] != landmarksStore.selectedDistanceIndex)">
+                <DistanceIteration v-if="map[1] != landmarksStore.selectedDistanceIndex" :distance="map[0]"
+                    :index="map[1]" :showLandmarks="false" @dblclick="landmarksStore.selectedDistanceIndex = map[1]" />
+            </div>
         </div>
     </div>
 </template>

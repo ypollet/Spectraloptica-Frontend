@@ -18,15 +18,15 @@ imageStore.setPath(urlParams.get('series') as string)
 
 <template>
   <main class="h-screen">
-    <Menu class="sticky menu top-0 flex flex-row grow z-50"></Menu>
+    <Menu class="sticky top-0 flex flex-row grow z-50"></Menu>
     <Separator></Separator>
     <div class="rest_height h-full flex"
     :class="settingsStore.isLeft ? 'flex-row' : 'flex-row-reverse'">
-      <div class="h-full w-96 flex-none overflow-auto rounded-md border p-4">
+      <div class="h-full w-96 flex-none overflow-auto border p-4">
         <Sidebar />
       </div>
 
-      <div class="h-full  w-0 flex-auto items-center justify-center">
+      <div class="h-full w-0 flex-auto items-center justify-centerborder">
         <CameraViewer/>
       </div>
     </div>
@@ -34,13 +34,10 @@ imageStore.setPath(urlParams.get('series') as string)
 </template>
 
 <style scoped>
-.menu {
-  height: 60px;
-}
 
 
 .rest_height {
-  height: calc(100% - 61px);
+  height: calc(100% - 41px);
 }
 
 </style>
