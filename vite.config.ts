@@ -33,15 +33,18 @@ export default defineConfig({
         manualChunks: (id) => {
           if (id.includes('/node_modules/vuedraggable')) {
             return 'vendor_vuedraggable';
-          } else if (id.includes('/node_modules/mathjs')) {
+          } if (id.includes('/node_modules/mathjs')) {
             return 'vendor_mathjs';
-          }else if (id.includes('/node_modules/@vue')) {
-            return 'vendor_@vue';
-          } else if (id.includes('/node_modules/')) {
+          } if (id.includes('/node_modules/radix')) {
+            return 'vendor_radix';
+          } if (id.includes('/node_modules/tailwind')) {
+            return 'vendor_tailwind';
+          } if (id.includes('/node_modules/sortable')) {
+            return 'vendor_sortable';
+          } if (id.includes('/node_modules/')) {
             return 'vendor';
-          } else {
-            return 'index';
           }
+          return null;
         },
       },
     },
