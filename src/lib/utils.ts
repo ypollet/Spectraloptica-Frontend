@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import * as math from 'mathjs';
+import { SpectralGroup, type Camera, type Size } from '@/data/models/spectral_image';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -14,12 +15,12 @@ export function radToDegrees(rad: number) {
   return (rad * 180.0) / math.pi;
 }
 
-export function componentToHex(c : number) {
+export function componentToHex(c: number) {
   var hex = c.toString(16);
   return hex.length == 1 ? "0" + hex : hex;
 }
 
-export function rgbToHex(r : number, g : number, b : number) {
+export function rgbToHex(r: number, g: number, b: number) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
@@ -80,13 +81,13 @@ export function nmToRGB(wavelength: number) {
 }
 
 export enum Scale {
-    px = 1,
-    m = 1000,
-    dm = 100,
-    cm = 10,
-    mm = 1,
-    µm = 0.001,
-    nm = 0.000001,
+  px = 1,
+  m = 1000,
+  dm = 100,
+  cm = 10,
+  mm = 1,
+  µm = 0.001,
+  nm = 0.000001,
 }
 
 
@@ -94,4 +95,33 @@ export const ZOOM_MIN = 0.5
 export const ZOOM_MAX = 4
 export const DOT_RADIUS = 4.5
 export const SPACE_TARGET = 0.2
+
+export const DEFAULT_TAB : string = "wavelength"
+
+export const DEFAULT_IMAGE = {
+  name: "RBINS Logo",
+  label: "RBINS Logo",
+  image: "https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg",
+  thumbnail: "",
+  filter: { type: "", description: "" },
+  wavelength: { type: "0", value: 0 }
+}
+
+export const DEFAULT_CAMERA : Camera = {
+  zoom: -1,
+  offset: { x: 0, y: 0 },
+  zoomRect: {
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0
+  }
+}
+
+export const DEFAULT_SIZE : Size = {
+  width: 1000,
+  height: 100
+}
+
+
 

@@ -1,22 +1,22 @@
 import * as math from 'mathjs'
-import { defineStore, type PiniaPluginContext, type StateTree } from 'pinia'
-import { DequeMax2 } from '@/data/models/dequeMax2'
+import { defineStore, type PiniaPluginContext } from 'pinia'
 import { Distance } from '@/data/models/distance'
 import { Landmark } from '@/data/models/landmark'
 import Color from 'color'
-import type { SpectralImage, Size } from '@/data/models/spectral_image'
+import { type SpectralImage, SpectralGroup } from '@/data/models/spectral_image'
 import { RepositoryFactory } from '@/data/repositories/repository_factory'
 import { repositorySettings } from '@/config/appSettings'
-import {nmToRGB, rgbToHex} from '@/lib/utils'
+import { DEFAULT_CAMERA, DEFAULT_IMAGE, DEFAULT_SIZE, nmToRGB, rgbToHex } from '@/lib/utils'
+import type { Position } from '@/data/models/coordinates'
+import { DEFAULT_GROUP } from '@/data/models/spectral_image'
 
 const repository = RepositoryFactory.get(repositorySettings.type)
 
-export const DEFAULT_TAB = "wavelength"
 
 export const useSettingsStore = defineStore('settings', {
-  state: () => ({ isLeft : false }),
+  state: () => ({ isLeft: false }),
   actions: {
-    useToggleLeft(value : boolean){
+    useToggleLeft(value: boolean) {
       this.isLeft = value
     },
   },
@@ -30,85 +30,45 @@ export const useSettingsStore = defineStore('settings', {
 
 export const useImagesStore = defineStore('images', {
   state: () => ({
-    objectPath: "isrnbel001_r1_xpl_rotated",
-    index : 0,
-    spectralImages : new Array<SpectralImage>(),
-    individualImages : new Map<string, SpectralImage>(),
-    image : DEFAULT_TAB,
-    size : { width : -1, height : -1},
-    zoom : -1,
-    offset : {x:0, y:0},
-    zoomRect: {
-      top: 0,
-      left: 0,
-      width: 0,
-      height:0 
-    },
+    objectPath: "",
+    index: "",
+    spectralImages: new Map<string,SpectralGroup>(),
   }),
-  getters: {
-    selectedImage : (state) => (state.index >= 0 && state.index < state.spectralImages.length && state.image == DEFAULT_TAB) ?  
-      state.spectralImages[state.index] : (state.individualImages.has(state.image)) ? state.individualImages.get(state.image)! :
-      {
-        name:"RBINS Logo",
-        label:"RBINS Logo",
-        image:"https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg", 
-        thumbnail:"", 
-        filter: {type : "", description: ""},
-        wavelength : {type: "0", value: 0}
-      },
-      minWavelength : (state) => Math.min.apply(null, state.spectralImages.map((image) => image.wavelength.value || Infinity)),
-      maxWavelength : (state) => Math.max.apply(null, state.spectralImages.map((image) => image.wavelength.value || -Infinity)),
-      listGradients : (state) => {
-        let i = 0
-        let list_gradients = [
-          "to right",
-          "#000000",
-        ]
-          state.spectralImages.forEach((image) => {
-            let [r, g, b] = nmToRGB(image.wavelength.value!)
-            list_gradients.push(rgbToHex(r, g, b) + " " + (i * 94 / (state.spectralImages.length - 1) + 3) + "%")
-            i++;
-          })
-          return list_gradients;
-      }
+  getters:{
+    selectedGroup : (state) => state.spectralImages.get(state.index) || DEFAULT_GROUP,
+    selectedImage : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.selectedImage : DEFAULT_IMAGE,
+    camera : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.camera : DEFAULT_CAMERA,
+    size : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.size : DEFAULT_SIZE,
+    listGradients : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.listGradients : []
   },
   actions: {
-    setPath(path : string) {
+    setPath(path: string) {
       this.$reset()
       this.objectPath = path
     },
-    setIndex(index : number){
-      this.image = DEFAULT_TAB
-      this.index = math.min(math.max(0, index), this.spectralImages.length-1)
-      
-    },
-    moveIndex(move: number) {
-      this.image = DEFAULT_TAB
-      this.index = math.min(math.max(0, this.index + move), this.spectralImages.length-1)
-    },
-    increment(){
-      if(this.image == DEFAULT_TAB){
-        this.moveIndex(1)
-      }
-    },
-    decrement(){
-      if(this.image == DEFAULT_TAB){
-        this.moveIndex(-1)
-      }
-    },
-    getImageName(index : number){
-      return (index >= 0 && index < this.spectralImages.length) ? this.spectralImages[index].name : "Image " + index
-    }
   },
 
   persist: {
     storage: sessionStorage,
-    key: 'images'
+    key: 'images',
+    afterHydrate: (ctx: PiniaPluginContext) => {
+
+      console.log("AfterHydrate")
+      console.log(ctx.store.$state)
+      let spectralImages = new Map<string, SpectralGroup>()
+      ctx.store.$state.spectralImages.forEach((spectralGroup : SpectralGroup, key : string) => {
+        spectralImages.set(key, new SpectralGroup(spectralGroup))
+      })
+      ctx.store.$state.spectralImages = spectralImages
+    }
   },
 })
 
+
+
+
 export const useLandmarksStore = defineStore('landmarks', {
-  state: () => ({ 
+  state: () => ({
     landmarks: Array<Landmark>(),
     distances: Array<Distance>(),
     adjustFactor: 1,
@@ -116,9 +76,9 @@ export const useLandmarksStore = defineStore('landmarks', {
     tab: "landmarks",
     selectedDistanceIndex: -1
   }),
-  getters:{
+  getters: {
     indexes: (state) => new Map(state.distances.map((distance, index) => [distance.label, index])),
-    selectedDistance : (state) => (state.selectedDistanceIndex >= 0 && state.selectedDistanceIndex < state.distances.length) ? state.distances[state.selectedDistanceIndex] :  null
+    selectedDistance: (state) => (state.selectedDistanceIndex >= 0 && state.selectedDistanceIndex < state.distances.length) ? state.distances[state.selectedDistanceIndex] : null
   },
   actions: {
     generateID() {
@@ -144,15 +104,15 @@ export const useLandmarksStore = defineStore('landmarks', {
     afterHydrate: (ctx: PiniaPluginContext) => {
       // restore landmarks
       let landmarks = new Array<Landmark>()
-      ctx.store.$state.landmarks.forEach((jsonObject : Landmark) => {
+      ctx.store.$state.landmarks.forEach((jsonObject: Landmark) => {
         let landmark = new Landmark(jsonObject.id, jsonObject.label, jsonObject.pose, jsonObject.position, Color(jsonObject.color))
         landmarks.push(landmark)
       })
       ctx.store.$state.landmarks = landmarks
 
       let distances = new Array<Distance>()
-      ctx.store.$state.distances.forEach((jsonObject : Distance) => {
-        let landmarks = jsonObject.landmarks.map((x : Landmark) => new Landmark(x.id, x.label, x.pose, x.position, Color(x.color)))
+      ctx.store.$state.distances.forEach((jsonObject: Distance) => {
+        let landmarks = jsonObject.landmarks.map((x: Landmark) => new Landmark(x.id, x.label, x.pose, x.position, Color(x.color)))
         let distance = new Distance(jsonObject.label, landmarks, Color(jsonObject.color))
         distances.push(distance)
       })

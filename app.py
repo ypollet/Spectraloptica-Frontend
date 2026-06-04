@@ -77,31 +77,41 @@ def images(id):
         abort(404)
     with open(f"{directory}/spectral.json", "r") as f:
         spectral_file = json.load(f)
-    to_jsonify = {}
-    encoded_images = []
-    individual_images = dict()
-    for image_data in spectral_file["spectral"]:
-        try:
-            image_data["label"] = image_data["name"]
-            encoded_images.append(image_data)
-        except Exception as error:
-            print(error)
-            continue
-    for image in spectral_file["individualImages"]:
-        try:
-            # file name of stacked image
-            image_data = spectral_file["individualImages"][image]
-            image_data["label"] = image
-            individual_images[image] = image_data
-        except Exception as error:
-            print(error)
-            continue
-    to_jsonify = {
-        "spectralImages": encoded_images,
-        "individualImages": individual_images,
-        "size": {"height": spectral_file["height"], "width": spectral_file["width"]},
-        "thumbnails": len(spectral_file["thumbnails"]) != 0,
-    }
+    
+    to_jsonify = dict()
+    for spectral_group in spectral_file["images"]:
+        print(spectral_group)
+        spectral_data = spectral_file["images"][spectral_group]
+        data = {}
+        spectral_images = []
+        individual_images = dict()
+        if "spectral" in spectral_data:
+            for image_data in spectral_data["spectral"]:
+                try:
+                    image_data["label"] = image_data["name"]
+                    spectral_images.append(image_data)
+                except Exception as error:
+                    print(error)
+                    continue
+        if "individualImages" in spectral_data:
+            for individual_image in spectral_data["individualImages"]:
+                try:
+                    # file name of stacked image
+                    image_data = spectral_data["individualImages"][individual_image]
+                    image_data["label"] = individual_image
+                    individual_images[individual_image] = image_data
+                except Exception as error:
+                    print(error)
+                    continue
+        data = {
+            "spectralImages": spectral_images,
+            "individualImages": individual_images,
+            "size": {"height": spectral_data["height"], "width": spectral_data},
+            "thumbnails": len(spectral_file["thumbnails"]) != 0,
+        }
+        to_jsonify[spectral_group] = data
+    
+    print(to_jsonify.keys())
     return jsonify(to_jsonify)
 
 

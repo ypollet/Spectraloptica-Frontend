@@ -3,7 +3,4 @@ export type Coordinates = {
     y: number
 }
 
-export type Position = {
-    x : number,
-    y : number,
-}
+export type Position = Coordinates

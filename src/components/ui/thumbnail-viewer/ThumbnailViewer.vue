@@ -38,21 +38,21 @@ import { useImagesStore } from '@/lib/stores';
 
 const imagesStore = useImagesStore()
 
-const { zoomRect } = storeToRefs(imagesStore)
+const { camera, size } = storeToRefs(imagesStore)
 
 const scaledZoomRect = ref<{
   top: number;
   left: number;
   width: number;
   height: number;
-}>(zoomRect.value)
+}>(camera.value.zoomRect)
 
 const base_image = ref<HTMLImageElement | null>(null)
 const imageContainer = ref<HTMLDivElement | null>(null)
 
 const isZoomedOut = ref<boolean>(true)
 
-watch(zoomRect, () => {
+watch(camera, () => {
   updateRect()
 })
 
@@ -60,19 +60,22 @@ onMounted(() => {
   updateRect()
 })
 
+
+
 function updateRect() {
   if (imageContainer.value && base_image.value && base_image.value.complete) {
-    let ratioW = imagesStore.size.width / imageContainer.value.clientWidth
-    let ratioH = imagesStore.size.height / imageContainer.value.clientHeight
+    let ratioW = size.value.width / imageContainer.value.clientWidth
+    let ratioH = size.value.height / imageContainer.value.clientHeight
 
     scaledZoomRect.value = {
-      top: zoomRect.value.top / ratioH,
-      left: zoomRect.value.left / ratioW,
-      width: zoomRect.value.width / ratioW,
-      height: zoomRect.value.height / ratioH
+      top: camera.value.zoomRect.top / ratioH,
+      left: camera.value.zoomRect.left / ratioW,
+      width: camera.value.zoomRect.width / ratioW,
+      height: camera.value.zoomRect.height / ratioH
     }
 
-    isZoomedOut.value = round(zoomRect.value.width, 3) != round(imagesStore.size.width, 3) || round(zoomRect.value.height, 3) != round(imagesStore.size.height, 3)
+    
+    isZoomedOut.value = round(camera.value.zoomRect.width, 3) != round(size.value.width, 3) || round(camera.value.zoomRect.height, 3) != round(size.value.height, 3)
   }
 }
 </script>

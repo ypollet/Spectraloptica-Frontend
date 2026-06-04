@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/vue-query'
 
 import { useImagesStore } from '@/lib/stores';
 
-import type { ProjectData, SpectralImage } from '@/data/models/spectral_image'
+import { SpectralGroup, type SpectralData } from '@/data/models/spectral_image'
 
 import ImageViewer from '@/components/ui/image-viewer/ImageViewer.vue';
 
@@ -26,26 +26,27 @@ const { isPending, isError, data, error } = useQuery({
 
 const repository = RepositoryFactory.get(repositorySettings.type)
 
-async function getImages(): Promise<ProjectData> {
-  if (imagesStore.spectralImages.length > 0 || imagesStore.individualImages.size > 0) {
-    return {
-      spectralImages: [],
-      individualImages: new Map(),
-      size: {width: 0, height:0},
-      thumbnails: true
-    }
+async function getImages(): Promise<Map<string,SpectralGroup>> {
+  console.log(imagesStore.spectralImages)
+  if (imagesStore.spectralImages.size > 0) {
+    console.log("Existing groups")
+    console.log(imagesStore.spectralImages)
+    return new Map();
   }
+  console.log("get groups")
   return repository.getImages(imagesStore.objectPath).then((data) => {
-    imagesStore.spectralImages = data.spectralImages
-    imagesStore.size = data.size
-    imagesStore.individualImages = data.individualImages
+    imagesStore.spectralImages = new Map<string, SpectralGroup>()
+    data.forEach((spectralData, key) => {
+      
+      imagesStore.spectralImages.set(key, new SpectralGroup(spectralData))
+    })
 
-    if (imagesStore.spectralImages.length == 0) {
-      let imageRand = data.individualImages.keys().next().value!
-      console.log("ImageRand : " + imageRand)
-      imagesStore.image = imageRand
-    }
-    return data
+    imagesStore.index = imagesStore.spectralImages.keys().next().value || ""
+    
+    imagesStore.spectralImages.forEach((spectralGroup) => {
+      console.log(spectralGroup.camera)
+    })
+    return imagesStore.spectralImages;
   })
 }
 </script>
