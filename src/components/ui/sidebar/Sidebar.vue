@@ -14,6 +14,15 @@ const { selectedImage, selectedGroup, listGradients} = storeToRefs(imageStore)
 
 <template>
   <div class="flex flex-col pb-4 space-y-4 w-auto h-full">
+    <div class="flex space-y-4">
+      <ToggleGroup class="w-full flex flex-wrap justify-around gap-3" type="single" :model-value="imageStore.index"
+      @update:modelValue="$event => {if($event) {imageStore.index = $event.toString()}}">
+        <ToggleGroupItem v-for="group in imageStore.spectralImages.keys()" :value="group">
+          {{ group }}
+        </ToggleGroupItem>
+        
+      </ToggleGroup>
+    </div>
     <div class="flex w-full flex-row w-full justify-center">
         <Label>{{ selectedImage.label }}</Label>
       </div>

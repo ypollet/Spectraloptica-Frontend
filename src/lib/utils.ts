@@ -1,7 +1,25 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import * as math from 'mathjs';
-import { SpectralGroup, type Camera, type Size } from '@/data/models/spectral_image';
+import { type Camera, type Size } from '@/data/models/spectral_image';
+
+
+export function replacer(key : string, value : any) {
+  if(value instanceof Map) {
+    return Object.fromEntries(value.entries());
+  } else {
+    return value;
+  }
+}
+
+export function reviver(key : string, value : any) {
+  if(typeof value === 'object' && value !== null) {
+    if (value.dataType === 'Map') {
+      return new Map(value.value);
+    }
+  }
+  return value;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -120,7 +138,7 @@ export const DEFAULT_CAMERA : Camera = {
 
 export const DEFAULT_SIZE : Size = {
   width: 1000,
-  height: 100
+  height: 1000
 }
 
 

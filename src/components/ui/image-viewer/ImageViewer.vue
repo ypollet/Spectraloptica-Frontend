@@ -166,6 +166,8 @@ function screenFit() {
     canvas.value.height = Math.floor(imageContainer.value.clientHeight)
 
     screenZoom.value = Math.min(imageContainer.value.clientWidth / imagesStore.size.width, imageContainer.value.clientHeight / imagesStore.size.height)
+    console.log(screenZoom.value)
+    console.log(imagesStore.camera)
     imagesStore.camera.zoom = screenZoom.value
   }
 }

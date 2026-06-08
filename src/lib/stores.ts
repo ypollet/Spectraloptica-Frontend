@@ -1,14 +1,15 @@
-import * as math from 'mathjs'
-import { defineStore, type PiniaPluginContext } from 'pinia'
+import { defineStore, type PiniaPluginContext, type StateTree } from 'pinia'
 import { Distance } from '@/data/models/distance'
 import { Landmark } from '@/data/models/landmark'
 import Color from 'color'
-import { type SpectralImage, SpectralGroup } from '@/data/models/spectral_image'
+import { type SpectralData, type SpectralImage, SpectralGroup } from '@/data/models/spectral_image'
 import { RepositoryFactory } from '@/data/repositories/repository_factory'
 import { repositorySettings } from '@/config/appSettings'
-import { DEFAULT_CAMERA, DEFAULT_IMAGE, DEFAULT_SIZE, nmToRGB, rgbToHex } from '@/lib/utils'
+import { DEFAULT_CAMERA, DEFAULT_IMAGE, DEFAULT_SIZE, replacer, reviver } from '@/lib/utils'
 import type { Position } from '@/data/models/coordinates'
 import { DEFAULT_GROUP } from '@/data/models/spectral_image'
+import destr from 'destr'
+import { isProxy, toRaw } from 'vue';
 
 const repository = RepositoryFactory.get(repositorySettings.type)
 
@@ -32,14 +33,14 @@ export const useImagesStore = defineStore('images', {
   state: () => ({
     objectPath: "",
     index: "",
-    spectralImages: new Map<string,SpectralGroup>(),
+    spectralImages: new Map<string, SpectralGroup>(),
   }),
-  getters:{
-    selectedGroup : (state) => state.spectralImages.get(state.index) || DEFAULT_GROUP,
-    selectedImage : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.selectedImage : DEFAULT_IMAGE,
-    camera : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.camera : DEFAULT_CAMERA,
-    size : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.size : DEFAULT_SIZE,
-    listGradients : (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.listGradients : []
+  getters: {
+    selectedGroup: (state) => state.spectralImages.get(state.index) || DEFAULT_GROUP,
+    selectedImage: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.selectedImage : DEFAULT_IMAGE,
+    camera: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.camera : structuredClone(DEFAULT_CAMERA),
+    size: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.size : DEFAULT_SIZE,
+    listGradients: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.listGradients : []
   },
   actions: {
     setPath(path: string) {
@@ -51,19 +52,32 @@ export const useImagesStore = defineStore('images', {
   persist: {
     storage: sessionStorage,
     key: 'images',
-    afterHydrate: (ctx: PiniaPluginContext) => {
-
-      console.log("AfterHydrate")
-      console.log(ctx.store.$state)
-      let spectralImages = new Map<string, SpectralGroup>()
-      ctx.store.$state.spectralImages.forEach((spectralGroup : SpectralGroup, key : string) => {
-        spectralImages.set(key, new SpectralGroup(spectralGroup))
-      })
-      ctx.store.$state.spectralImages = spectralImages
+    serializer: {
+      deserialize: (value: string) => {
+        let state = destr<StateTree>(value)
+        let stateCopy = Object.assign({}, state)
+        let spectralImages = new Map<string, SpectralGroup>()
+        let mapSpectralImages = new Map<string, SpectralData>(Object.entries(state.spectralImages))
+        mapSpectralImages.forEach((spectralData: SpectralData, key: string) => {
+          console.log(key)
+          spectralImages.set(key, new SpectralGroup({
+            spectralImages: Array.from(spectralData.spectralImages),
+            individualImages: new Map<string, SpectralImage>(Object.entries(spectralData.individualImages)),
+            size: spectralData.size,
+            thumbnails: spectralData.thumbnails
+          }))
+        })
+        console.log(spectralImages.size)
+        stateCopy.spectralImages = spectralImages
+        console.log(stateCopy)
+        return stateCopy
+      },
+      serialize: (state: StateTree) => {
+        return JSON.stringify(state, replacer)
+      }
     }
-  },
+  }  
 })
-
 
 
 

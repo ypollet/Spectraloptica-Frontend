@@ -74,7 +74,6 @@ function updateRect() {
       height: camera.value.zoomRect.height / ratioH
     }
 
-    
     isZoomedOut.value = round(camera.value.zoomRect.width, 3) != round(size.value.width, 3) || round(camera.value.zoomRect.height, 3) != round(size.value.height, 3)
   }
 }

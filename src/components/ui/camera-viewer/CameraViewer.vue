@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 
 import { Loader2 } from 'lucide-vue-next';
 
@@ -7,45 +6,44 @@ import { useQuery } from '@tanstack/vue-query'
 
 import { useImagesStore } from '@/lib/stores';
 
-import { SpectralGroup, type SpectralData } from '@/data/models/spectral_image'
+import { SpectralGroup } from '@/data/models/spectral_image'
 
 import ImageViewer from '@/components/ui/image-viewer/ImageViewer.vue';
 
 import { RepositoryFactory } from '@/data/repositories/repository_factory'
 import { repositorySettings } from "@/config/appSettings"
 
-import Label from '../label/Label.vue';
-
-
 const imagesStore = useImagesStore()
 
 const { isPending, isError, data, error } = useQuery({
   queryKey: ['all_images'],
-  queryFn: () => getImages(),
+  queryFn: () => {
+    console.log("Fetching images...")
+    return getImages()
+  },
 })
 
 const repository = RepositoryFactory.get(repositorySettings.type)
 
 async function getImages(): Promise<Map<string,SpectralGroup>> {
+  console.log(imagesStore.spectralImages.size > 0)
   console.log(imagesStore.spectralImages)
   if (imagesStore.spectralImages.size > 0) {
-    console.log("Existing groups")
-    console.log(imagesStore.spectralImages)
     return new Map();
   }
-  console.log("get groups")
+  console.log("There are no images in the store, fetching from repository...")
+
   return repository.getImages(imagesStore.objectPath).then((data) => {
+    console.log("Fetched images:")
     imagesStore.spectralImages = new Map<string, SpectralGroup>()
     data.forEach((spectralData, key) => {
-      
+      console.log(key)
       imagesStore.spectralImages.set(key, new SpectralGroup(spectralData))
     })
 
-    imagesStore.index = imagesStore.spectralImages.keys().next().value || ""
+    imagesStore.index = Array.from(imagesStore.spectralImages.keys())[0] || ""
     
-    imagesStore.spectralImages.forEach((spectralGroup) => {
-      console.log(spectralGroup.camera)
-    })
+    console.log(imagesStore.$state)
     return imagesStore.spectralImages;
   })
 }

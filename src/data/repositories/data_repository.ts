@@ -18,6 +18,7 @@ export class DataRepository implements Repository {
     }
 
     async getImages(objectPath: string): Promise<Map<string, SpectralData>> {
+        console.log("Getting images from repository...")
         return this.provider.getImages(objectPath).then((res) => {
             let data : Map<string, SpectralData> = new Map(Object.entries(res.data))
             data.forEach((spectralData, label) => {

@@ -106,7 +106,7 @@ def images(id):
         data = {
             "spectralImages": spectral_images,
             "individualImages": individual_images,
-            "size": {"height": spectral_data["height"], "width": spectral_data},
+            "size": {"height": spectral_data["height"], "width": spectral_data["width"]},
             "thumbnails": len(spectral_file["thumbnails"]) != 0,
         }
         to_jsonify[spectral_group] = data

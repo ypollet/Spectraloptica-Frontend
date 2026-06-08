@@ -58,16 +58,26 @@ export class SpectralGroup {
 
     constructor(data: SpectralData) {
         this.index = 0
-        this.spectralImages = data.spectralImages
-        this.individualImages = data.individualImages
+        this.spectralImages = structuredClone(data.spectralImages)
+        this.individualImages = structuredClone(data.individualImages)
         this.thumbnails = data.thumbnails
         this.image = DEFAULT_TAB
-        this.size = data.size
+        this.size = structuredClone(data.size)
+
         this.camera = structuredClone(DEFAULT_CAMERA);
 
         if (this.spectralImages.length == 0) {
             let imageRand = this.individualImages.keys().next().value!
             this.image = imageRand
+        }
+    }
+
+    toJSON() {
+        return {
+            spectralImages: this.spectralImages,
+            individualImages: Object.fromEntries(this.individualImages),
+            thumbnails: this.thumbnails,
+            size: this.size
         }
     }
 
@@ -126,10 +136,10 @@ export class SpectralGroup {
 }
 
 export const DEFAULT_GROUP = new SpectralGroup({
-  individualImages: new Map(),
-  spectralImages: [],
-  size : DEFAULT_SIZE,
-  thumbnails: false
+    individualImages: new Map(),
+    spectralImages: [],
+    size: structuredClone(DEFAULT_SIZE),
+    thumbnails: false
 })
 
 
