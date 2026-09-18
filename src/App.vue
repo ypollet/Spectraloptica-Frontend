@@ -7,10 +7,10 @@ const imageStore = useImagesStore()
 function changePicture(event: KeyboardEvent) {
   let key = event.key
   if(key == "ArrowUp" || key == "ArrowRight"){
-    imageStore.increment()
+    imageStore.selectedGroup.increment()
   }
   if(key == "ArrowDown" || key == "ArrowLeft"){
-    imageStore.decrement()
+    imageStore.selectedGroup.decrement()
   }
 }
 </script>

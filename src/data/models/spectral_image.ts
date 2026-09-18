@@ -9,11 +9,14 @@ export type SpectralImage = {
     label: string,
     thumbnail: string,
     wavelength: Wavelength,
-    filter: Filter
+    cameraFilter: Filter,
+    lightFilter: Filter
 }
 
 export type Filter = {
     type: string,
+    value: number,
+    band: [number | null, number | null]
     description: string
 }
 
