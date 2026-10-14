@@ -9,8 +9,8 @@ export type SpectralImage = {
     label: string,
     thumbnail: string,
     wavelength: Wavelength,
-    cameraFilter: Filter,
-    lightFilter: Filter
+    cameraFilter: Filter | undefined,
+    lightFilter: Filter  | undefined
 }
 
 export type Filter = {
@@ -97,17 +97,13 @@ export class SpectralGroup {
         return Math.max.apply(null, this.spectralImages.map((image) => image.wavelength.value || -Infinity))
     }
     get listGradients() {
-        let i = 0
-        let list_gradients = [
-            "to right",
-            "#000000",
-        ]
-        this.spectralImages.forEach((image) => {
-            let [r, g, b] = nmToRGB(image.wavelength.value!)
-            list_gradients.push(rgbToHex(r, g, b) + " " + (i * 94 / (this.spectralImages.length - 1) + 3) + "%")
-            i++;
+        const n = this.spectralImages.length
+        const stops = this.spectralImages.map((image, i) => {
+            const [r, g, b] = nmToRGB(image.wavelength.value!)
+            const pos = n > 1 ? i * 94 / (n - 1) + 3 : 50
+            return `${rgbToHex(r, g, b)} ${pos}%`
         })
-        return list_gradients;
+        return `linear-gradient(to right, #000000, ${stops.join(", ")})`
     }
 
     setIndex(index: number) {

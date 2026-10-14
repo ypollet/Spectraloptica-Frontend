@@ -5,3 +5,4 @@ dist
 *.local
 __pycache__/
 .spectral
+src/components/ui/image-viewer/ImageViewer-Landmarks.vue

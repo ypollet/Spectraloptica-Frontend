@@ -40,7 +40,7 @@ export const useImagesStore = defineStore('images', {
     selectedImage: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.selectedImage : DEFAULT_IMAGE,
     camera: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.camera : structuredClone(DEFAULT_CAMERA),
     size: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.size : DEFAULT_SIZE,
-    listGradients: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.listGradients : []
+    listGradients: (state) => (state.spectralImages.has(state.index)) ? state.spectralImages.get(state.index)!.listGradients : "none"
   },
   actions: {
     setPath(path: string) {

@@ -121,8 +121,8 @@ export const DEFAULT_IMAGE = {
   label: "RBINS Logo",
   image: "https://www.naturalsciences.be/bundles/8c62adb1e0fbef009ef7c06c69a991890012e203/img/logos/logo.svg",
   thumbnail: "",
-  cameraFilter: { type: "", description: "" },
-  lightFilter: { type: "", description: "" },
+  cameraFilter: null,
+  lightFilter: null,
   wavelength: { type: "0", value: 0 }
 }
 

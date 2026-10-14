@@ -63,6 +63,8 @@ const { selectedImage, selectedGroup, listGradients} = storeToRefs(imageStore)
         <div class="flex flex-col">
           <h3 class="font-bold">Camera Filter</h3>
           <span>{{ selectedImage.cameraFilter?.type ?? ""}}</span>
+          <span>{{ selectedImage.cameraFilter?.value ?? ""}}</span>
+          <span>{{ selectedImage.cameraFilter?.type ?? ""}}</span>
           <span>{{ selectedImage.cameraFilter?.description ?? ""}}</span>
         </div>
         <div class="flex flex-col">
@@ -109,6 +111,6 @@ const { selectedImage, selectedGroup, listGradients} = storeToRefs(imageStore)
 }
 
 .fibggor {
-  background-image: linear-gradient(v-bind(listGradients));
+  background-image: v-bind(listGradients);
 }
 </style>
