@@ -57,13 +57,18 @@ const { selectedImage, selectedGroup, listGradients} = storeToRefs(imageStore)
       <div class="flex flex-row px-3 py-2 justify-around text-center">
         <div class="flex flex-col">
           <h3 class="font-bold">Wavelength</h3>
-          <span>{{ selectedImage.wavelength.type }}</span>
-          <span>{{ selectedImage.wavelength.value }}</span>
+          <span>{{ selectedImage.wavelength?.type ?? ""}}</span>
+          <span>{{ selectedImage.wavelength?.value ?? "" }}</span>
         </div>
         <div class="flex flex-col">
-          <h3 class="font-bold">Filter</h3>
-          <span>{{ selectedImage.filter.type }}</span>
-          <span>{{ selectedImage.filter.description }}</span>
+          <h3 class="font-bold">Camera Filter</h3>
+          <span>{{ selectedImage.cameraFilter?.type ?? ""}}</span>
+          <span>{{ selectedImage.cameraFilter?.description ?? ""}}</span>
+        </div>
+        <div class="flex flex-col">
+          <h3 class="font-bold">Light Filter</h3>
+          <span>{{ selectedImage.lightFilter?.type ?? ""}}</span>
+          <span>{{ selectedImage.lightFilter?.description ?? ""}}</span>
         </div>
       </div>
       <!--

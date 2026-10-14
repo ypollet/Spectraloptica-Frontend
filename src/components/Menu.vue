@@ -1,43 +1,24 @@
 <script setup lang="ts">
 import {
   Menubar,
-  MenubarCheckboxItem,
   MenubarContent,
   MenubarItem,
   MenubarLabel,
   MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
-  MenubarSeparator,
   MenubarShortcut,
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
 } from '@/components/ui/menubar'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose
-} from '@/components/ui/dialog'
-
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 
 
 
 import { useToggle, useDark } from '@vueuse/core'
-import { useSettingsStore, useImagesStore } from '@/lib/stores'
+import { useSettingsStore } from '@/lib/stores'
 
 const settingsStore = useSettingsStore()
-const imagesStore = useImagesStore()
 
 const isDark = useDark({
   storageKey: 'localStorage'

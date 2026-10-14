@@ -18,7 +18,6 @@ const screenZoom = ref<number>(1)
 watch(
   selectedImage,
   () => {
-    console.log("New Image")
     update()
     base_image.value.src = imagesStore.selectedImage.thumbnail || imagesStore.selectedImage.image
     base_image.value.alt = (imagesStore.selectedImage.thumbnail) ? 'Thumbnail of ' + imagesStore.selectedImage.name : imagesStore.selectedImage.name
