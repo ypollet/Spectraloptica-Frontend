@@ -6,3 +6,4 @@ dist
 __pycache__/
 .spectral
 src/components/ui/image-viewer/ImageViewer-Landmarks.vue
+src/assets/fonts/DejaVuSans.ttf
