@@ -18,7 +18,6 @@ const imagesStore = useImagesStore()
 const { isPending, isError, data, error } = useQuery({
   queryKey: ['all_images'],
   queryFn: () => {
-    console.log("Fetching images...")
     return getImages()
   },
 })
@@ -26,24 +25,18 @@ const { isPending, isError, data, error } = useQuery({
 const repository = RepositoryFactory.get(repositorySettings.type)
 
 async function getImages(): Promise<Map<string,SpectralGroup>> {
-  console.log(imagesStore.spectralImages.size > 0)
-  console.log(imagesStore.spectralImages)
   if (imagesStore.spectralImages.size > 0) {
     return new Map();
   }
-  console.log("There are no images in the store, fetching from repository...")
 
   return repository.getImages(imagesStore.objectPath).then((data) => {
-    console.log("Fetched images:")
     imagesStore.spectralImages = new Map<string, SpectralGroup>()
     data.forEach((spectralData, key) => {
-      console.log(key)
       imagesStore.spectralImages.set(key, new SpectralGroup(spectralData))
     })
 
     imagesStore.index = Array.from(imagesStore.spectralImages.keys())[0] || ""
     
-    console.log(imagesStore.$state)
     return imagesStore.spectralImages;
   })
 }

@@ -3,15 +3,9 @@ import { Distance } from '@/data/models/distance'
 import { Landmark } from '@/data/models/landmark'
 import Color from 'color'
 import { type SpectralData, type SpectralImage, SpectralGroup } from '@/data/models/spectral_image'
-import { RepositoryFactory } from '@/data/repositories/repository_factory'
-import { repositorySettings } from '@/config/appSettings'
 import { DEFAULT_CAMERA, DEFAULT_IMAGE, DEFAULT_SIZE, replacer, reviver } from '@/lib/utils'
-import type { Position } from '@/data/models/coordinates'
 import { DEFAULT_GROUP } from '@/data/models/spectral_image'
 import destr from 'destr'
-import { isProxy, toRaw } from 'vue';
-
-const repository = RepositoryFactory.get(repositorySettings.type)
 
 
 export const useSettingsStore = defineStore('settings', {
@@ -59,7 +53,6 @@ export const useImagesStore = defineStore('images', {
         let spectralImages = new Map<string, SpectralGroup>()
         let mapSpectralImages = new Map<string, SpectralData>(Object.entries(state.spectralImages))
         mapSpectralImages.forEach((spectralData: SpectralData, key: string) => {
-          console.log(key)
           spectralImages.set(key, new SpectralGroup({
             spectralImages: Array.from(spectralData.spectralImages),
             individualImages: new Map<string, SpectralImage>(Object.entries(spectralData.individualImages)),
@@ -67,9 +60,7 @@ export const useImagesStore = defineStore('images', {
             thumbnails: spectralData.thumbnails
           }))
         })
-        console.log(spectralImages.size)
         stateCopy.spectralImages = spectralImages
-        console.log(stateCopy)
         return stateCopy
       },
       serialize: (state: StateTree) => {

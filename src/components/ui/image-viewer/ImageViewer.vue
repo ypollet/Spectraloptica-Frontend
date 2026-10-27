@@ -146,8 +146,8 @@ function update() {
       y: Math.max(0, topLeft.y)
     }
     let shift = {
-      x: Math.max(0, (canvas.value.width - imagesStore.size.width * imagesStore.camera.zoom))/ imagesStore.camera.zoom,
-      y: Math.max(0, (canvas.value.height - imagesStore.size.height * imagesStore.camera.zoom))/ imagesStore.camera.zoom
+      x: Math.max(0, (canvas.value.width - imagesStore.size.width * imagesStore.camera.zoom)) / imagesStore.camera.zoom,
+      y: Math.max(0, (canvas.value.height - imagesStore.size.height * imagesStore.camera.zoom)) / imagesStore.camera.zoom
     }
 
     imagesStore.camera.zoomRect = {
@@ -165,8 +165,6 @@ function screenFit() {
     canvas.value.height = Math.floor(imageContainer.value.clientHeight)
 
     screenZoom.value = Math.min(imageContainer.value.clientWidth / imagesStore.size.width, imageContainer.value.clientHeight / imagesStore.size.height)
-    console.log(screenZoom.value)
-    console.log(imagesStore.camera)
     imagesStore.camera.zoom = screenZoom.value
   }
 }
@@ -205,12 +203,12 @@ function updateOffset(movementX: number, movementY: number) {
 
 function updateZoom(zoomDelta: number) {
   imagesStore.camera.zoom = +(imagesStore.camera.zoom * (1 + zoomDelta / 20)).toFixed(5)
-  imagesStore.camera.zoom = Math.max(ZOOM_MIN*screenZoom.value, Math.min(ZOOM_MAX, imagesStore.camera.zoom))
+  imagesStore.camera.zoom = Math.max(ZOOM_MIN * screenZoom.value, Math.min(ZOOM_MAX, imagesStore.camera.zoom))
 }
 
 
 function zoomWithWheel(event: WheelEvent) {
-  
+
   let oldZoom = imagesStore.camera.zoom
   updateZoom(Math.sign(-event.deltaY))
   let deltaZoom = imagesStore.camera.zoom / oldZoom
@@ -241,13 +239,15 @@ function mousemove(event: MouseEvent) {
 }
 
 function stopDrag(event: MouseEvent) {
-  dragging.value = false
-  update()
+  if (dragging.value) {
+    dragging.value = false
+    update()
+  }
 }
 
 
 function printPos(event: MouseEvent) {
-  let pos = getPos({x: event.pageX, y:event.pageY})
+  let pos = getPos({ x: event.pageX, y: event.pageY })
   console.log("Position = ", pos.x, " : ", pos.y)
 }
 
@@ -263,13 +263,10 @@ function onImage(pos: Coordinates): boolean {
 </script>
 
 <template>
-  <div ref="imageContainer"
-    :class="cn('border justify-center items-center', props.class)"
-    @wheel.prevent>
+  <div ref="imageContainer" :class="cn('border justify-center items-center', props.class)" @wheel.prevent>
 
-    <canvas ref="canvas" tabindex='1'
-      @mousedown="startDrag" @mouseup="stopDrag" @mousemove="mousemove" @mouseout="stopDrag" @wheel="zoomWithWheel"
-      @contextmenu.prevent>
+    <canvas ref="canvas" tabindex='1' @mousedown="startDrag" @mouseup="stopDrag" @mousemove="mousemove"
+      @mouseout="stopDrag" @wheel="zoomWithWheel" @contextmenu.prevent>
     </canvas>
     <!--
     <img ref="base_image" class="hidden" :src="imagesStore.selectedImage.thumbnail || imagesStore.selectedImage.image"

@@ -35,6 +35,7 @@ import type { Pose } from '../models/landmark';
 
 export class OrthancProvider implements DataProvider {
     server: string;
+    supportsProcessing = true;
 
     constructor(server: string) {
         this.server = server
@@ -60,7 +61,14 @@ export class OrthancProvider implements DataProvider {
         return axios.get(path)
     }
 
+    // image names are Orthanc instance ids
+    async getFalseColor(objectPath: string, red: string, green: string, blue: string, thumb: boolean): Promise<AxiosResponse> {
+        const path = this.server + '/spectraloptica/' + objectPath + '/false_color'
+        return axios.get(path, { params: { r: red, g: green, b: blue, thumb: thumb }, responseType: "blob" })
+    }
 
-    
-
+    async getOperation(objectPath: string, operation: string, left: string, right: string, thumb: boolean): Promise<AxiosResponse> {
+        const path = this.server + '/spectraloptica/' + objectPath + '/operation/' + operation
+        return axios.get(path, { params: { left: left, right: right, thumb: thumb }, responseType: "blob" })
+    }
 }

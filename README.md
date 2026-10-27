@@ -1,4 +1,4 @@
-# Stackoptica-Frontend
+# Spectraloptica-Frontend
 Vue Frontend of Stackoptica
 
 
@@ -36,3 +36,8 @@ Start any server the webApp the *dist* folder e.g.:
 ```
 flask run
 ```
+
+TODO :
+verification blur pour opérations
+Analyse composantes principales ->
+Ajout les 4 (landmarks - distance - bounding_box - polygone)

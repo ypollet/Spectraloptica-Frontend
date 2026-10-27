@@ -54,12 +54,14 @@ const isZoomedOut = ref<boolean>(true)
 
 watch(camera, () => {
   updateRect()
+},
+{
+  deep: true
 })
 
 onMounted(() => {
   updateRect()
 })
-
 
 
 function updateRect() {

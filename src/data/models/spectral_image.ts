@@ -1,4 +1,4 @@
-import { DEFAULT_CAMERA, DEFAULT_IMAGE, nmToRGB, rgbToHex, DEFAULT_TAB, DEFAULT_SIZE } from "@/lib/utils";
+import { DEFAULT_CAMERA, DEFAULT_IMAGE, nmToRGB, rgbToHex, DEFAULT_TAB, DEFAULT_SIZE, DEFAULT_WAVELENGTH } from "@/lib/utils";
 import type { Position } from "@vueuse/core";
 import * as math from 'mathjs';
 
@@ -10,19 +10,20 @@ export type SpectralImage = {
     thumbnail: string,
     wavelength: Wavelength,
     cameraFilter: Filter | undefined,
-    lightFilter: Filter  | undefined
+    lightFilter: Filter  | undefined,
+    // result of an operation or a false color, only kept for the current session
+    computed?: boolean
 }
 
 export type Filter = {
-    type: string,
-    value: number,
-    band: [number | null, number | null]
+    min : number | null,
+    max : number | null,
     description: string
 }
 
 export type Wavelength = {
-    type: string,
-    value: number | undefined
+    value: number,
+    bandwidth: number
 }
 
 export type Size = {
@@ -78,7 +79,8 @@ export class SpectralGroup {
     toJSON() {
         return {
             spectralImages: this.spectralImages,
-            individualImages: Object.fromEntries(this.individualImages),
+            // computed images point to blob URLs that do not survive a reload
+            individualImages: Object.fromEntries(Array.from(this.individualImages).filter(([_, image]) => !image.computed)),
             thumbnails: this.thumbnails,
             size: this.size
         }
@@ -126,6 +128,50 @@ export class SpectralGroup {
     decrement() {
         if (this.image == DEFAULT_TAB) {
             this.moveIndex(-1)
+        }
+    }
+
+    // starts with the thumbnail as image too, until setComputedFullImage provides the full resolution
+    addComputedImage(label: string, thumbnail: string) {
+        this.individualImages.set(label, {
+            name: label,
+            label: label,
+            image: thumbnail,
+            thumbnail: thumbnail,
+            wavelength: DEFAULT_WAVELENGTH,
+            cameraFilter: undefined,
+            lightFilter: undefined,
+            computed: true
+        })
+        this.image = label
+    }
+
+    // returns false if the image was removed in the meantime
+    setComputedFullImage(label: string, image: string): boolean {
+        const computed = this.individualImages.get(label)
+        if (!computed?.computed) {
+            return false
+        }
+        if (computed.image != computed.thumbnail) {
+            URL.revokeObjectURL(computed.image)
+        }
+        // replace the entry rather than mutating it, so the viewer sees a new selected image and reloads
+        this.individualImages.set(label, { ...computed, image: image })
+        return true
+    }
+
+    removeComputedImage(label: string) {
+        const image = this.individualImages.get(label)
+        if (!image?.computed) {
+            return
+        }
+        if (this.image == label) {
+            this.image = (this.spectralImages.length > 0) ? DEFAULT_TAB : Array.from(this.individualImages.keys()).find((key) => key != label) ?? DEFAULT_TAB
+        }
+        this.individualImages.delete(label)
+        URL.revokeObjectURL(image.thumbnail)
+        if (image.image != image.thumbnail) {
+            URL.revokeObjectURL(image.image)
         }
     }
 

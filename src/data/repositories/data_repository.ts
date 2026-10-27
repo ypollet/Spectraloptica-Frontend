@@ -11,6 +11,22 @@ export class DataRepository implements Repository {
     constructor(provider: DataProvider) {
         this.provider = provider
     }
+
+    get supportsProcessing(): boolean {
+        return this.provider.supportsProcessing
+    }
+
+    computeFalseColor(objectPath: string, red: string, green: string, blue: string, thumb: boolean): Promise<string> {
+        return this.provider.getFalseColor(objectPath, red, green, blue, thumb).then((res) => {
+            return URL.createObjectURL(res.data as Blob)
+        })
+    }
+
+    computeOperation(objectPath: string, operation: string, left: string, right: string, thumb: boolean): Promise<string> {
+        return this.provider.getOperation(objectPath, operation, left, right, thumb).then((res) => {
+            return URL.createObjectURL(res.data as Blob)
+        })
+    }
     computeLandmarkPosition(objectPath: string, pose: Pose): Promise<Position> {
         return this.provider.computeLandmarkPosition(objectPath, pose).then((rest) => {
             return rest.data as Position
@@ -18,7 +34,6 @@ export class DataRepository implements Repository {
     }
 
     async getImages(objectPath: string): Promise<Map<string, SpectralData>> {
-        console.log("Getting images from repository...")
         return this.provider.getImages(objectPath).then((res) => {
             let data : Map<string, SpectralData> = new Map(Object.entries(res.data))
             data.forEach((spectralData, label) => {

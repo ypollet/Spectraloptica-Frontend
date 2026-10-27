@@ -116,6 +116,8 @@ export const SPACE_TARGET = 0.2
 
 export const DEFAULT_TAB : string = "wavelength"
 
+export const DEFAULT_WAVELENGTH = { value: 550, bandwidth: 300 } // Visible light
+
 export const DEFAULT_IMAGE = {
   name: "RBINS Logo",
   label: "RBINS Logo",
@@ -123,8 +125,9 @@ export const DEFAULT_IMAGE = {
   thumbnail: "",
   cameraFilter: null,
   lightFilter: null,
-  wavelength: { type: "0", value: 0 }
+  wavelength: DEFAULT_WAVELENGTH
 }
+
 
 export const DEFAULT_CAMERA : Camera = {
   zoom: -1,
